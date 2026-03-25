@@ -1,0 +1,193 @@
+{
+  "name": "dw-profiles-extension",
+  "displayName": "DW Profiles Extension",
+  "publisher": "dharmeshgurnani",
+  "author": "Dharmesh Gurnani",
+  "icon": "images/icon.png",
+  "description": "Define multiple dw.json profiles and switch them easily using the status bar",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.83.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run package-extension",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package-extension": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --minify"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "dw-profiles.pickProfile",
+        "title": "DW Profiles: Pick Profile"
+      },
+      {
+        "command": "dw-profiles.createProfile",
+        "title": "DW Profiles: Create Profile",
+        "icon": "$(add)"
+      },
+      {
+        "command": "dw-profiles.editProfile",
+        "title": "DW Profiles: Edit Profile"
+      },
+      {
+        "command": "dw-profiles.deleteProfile",
+        "title": "DW Profiles: Delete Profile",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "dw-profiles.applyProfileNode",
+        "title": "Apply Profile",
+        "icon": "$(check)"
+      },
+      {
+        "command": "dw-profiles.editProfileNode",
+        "title": "Edit Profile",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "dw-profiles.deleteProfileNode",
+        "title": "Delete Profile",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "dw-profiles.refreshSidebar",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "dw-profiles-container",
+          "title": "DW Profiles",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "dw-profiles-container": [
+        {
+          "id": "dw-profiles-view",
+          "name": "Profiles"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "dw-profiles.createProfile",
+          "when": "view == dw-profiles-view",
+          "group": "navigation"
+        },
+        {
+          "command": "dw-profiles.refreshSidebar",
+          "when": "view == dw-profiles-view",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "dw-profiles.applyProfileNode",
+          "when": "view == dw-profiles-view && viewItem == dwProfile",
+          "group": "inline"
+        },
+        {
+          "command": "dw-profiles.editProfileNode",
+          "when": "view == dw-profiles-view && viewItem == dwProfile",
+          "group": "inline"
+        },
+        {
+          "command": "dw-profiles.deleteProfileNode",
+          "when": "view == dw-profiles-view && viewItem == dwProfile",
+          "group": "inline"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "DW Profiles",
+      "properties": {
+        "dwProfiles.profiles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "DW Profile",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the profile. E.g: Staging, Development"
+              },
+              "hostname": {
+                "type": "string",
+                "description": "SFCC Hostname"
+              },
+              "username": {
+                "type": "string",
+                "description": "SFCC Username"
+              },
+              "password": {
+                "type": "string",
+                "description": "SFCC Password or specific key"
+              },
+              "code-version": {
+                "type": "string",
+                "description": "SFCC Code Version"
+              }
+            }
+          },
+          "default": [],
+          "description": "List of all DW profiles"
+        },
+        "dwProfiles.workspaceProfileSelections": {
+          "type": "object",
+          "default": {},
+          "scope": "application",
+          "markdownDescription": "Stores the selected profile ID for each workspace folder."
+        },
+        "dwProfiles.statusBarFormat": {
+          "type": "string",
+          "enum": [
+            "full",
+            "compact"
+          ],
+          "default": "full",
+          "markdownDescription": "Status bar display format:\n- **full**: `DW > profile` (default)\n- **compact**: `profile`"
+        }
+      }
+    },
+    "colors": [
+      {
+        "id": "dwProfiles.devBackground",
+        "description": "Background color for DW Profiles on Development environment",
+        "defaults": {
+          "dark": "#1b4d21",
+          "light": "#2ea043",
+          "highContrast": "#2ea043"
+        }
+      },
+      {
+        "id": "dwProfiles.stagingBackground",
+        "description": "Background color for DW Profiles on Staging environment",
+        "defaults": {
+          "dark": "#0e639c",
+          "light": "#007acc",
+          "highContrast": "#007acc"
+        }
+      }
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.83.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.3"
+  }
+}
