@@ -65,14 +65,6 @@ You can manually edit them in your `settings.json`:
 
 The selected profile for each workspace is stored independently to allow separate projects to use different profiles simultaneously.
 
-## Publishing
-
-To package and install this extension locally:
-
-1. Install `vsce` globally if you haven't: `npm install -g @vscode/vsce`
-2. Run `vsce package` to generate a `.vsix` file.
-3. Install the generated `.vsix` in VS Code.
-
 ## Issues and Feature Requests
 
 If you encounter any bugs or have feature requests, please report them!
