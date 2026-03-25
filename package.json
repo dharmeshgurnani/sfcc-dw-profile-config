@@ -1,9 +1,13 @@
 {
-  "name": "dw-profiles-extension",
-  "displayName": "DW Profiles Extension",
+  "name": "sfcc-dw-profile-config",
+  "displayName": "SFCC DW Profile Config",
   "publisher": "dharmeshgurnani",
   "author": "Dharmesh Gurnani",
   "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dharmeshgurnani/sfcc-dw-profile-config"
+  },
   "description": "Define multiple dw.json profiles and switch them easily using the status bar",
   "version": "1.0.0",
   "engines": {
