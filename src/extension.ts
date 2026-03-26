@@ -12,51 +12,118 @@ async function checkForExistingDWJson() {
     }
 
     const profiles = Config.getProfiles();
-    
-    // Check if there is already a profile that matches this hostname (or exact match, but hostname/username is safe)
     const isSaved = profiles.some(p => p.hostname === existingConfig.hostname && p.username === existingConfig.username);
 
     if (!isSaved) {
         const result = await vscode.window.showInformationMessage(
             'Found an existing dw.json configuration. Would you like to save it to your DW Profiles?',
-            'Yes', 'No'
+            'Update Existing Profile', 'Create New Profile', 'No'
         );
 
-        if (result === 'Yes') {
-            const name = await vscode.window.showInputBox({ 
-                prompt: 'Enter a name for this profile (e.g., Current Project)', 
-                value: 'Recovered Profile' 
-            });
-
-            if (name) {
-                // If the user picked a name that exists, do a quick check
-                if (profiles.find(p => p.name === name)) {
-                    vscode.window.showErrorMessage(`Profile '${name}' already exists. Please create it manually with a different name.`);
-                    return;
-                }
-
-                profiles.push({
-                    name,
-                    hostname: existingConfig.hostname,
-                    username: existingConfig.username,
-                    password: existingConfig.password,
-                    "code-version": existingConfig["code-version"]
-                });
-                await Config.saveProfiles(profiles);
-                vscode.window.showInformationMessage(`DW Profile '${name}' saved successfully!`);
-                StatusBarManager.update();
-            }
+        if (result === 'Update Existing Profile') {
+            await updateExistingProfileWithData(existingConfig);
+        } else if (result === 'Create New Profile') {
+            await createNewProfileWithData(existingConfig);
         }
+    }
+}
+
+async function handleDWJsonChange() {
+    if (DWJsonManager.isInternalWriting) return;
+
+    const existingConfig = DWJsonManager.readDWJson();
+    if (!existingConfig || (!existingConfig.hostname && !existingConfig.username)) return;
+
+    // Optional: check if it already matches the current profile exactly
+    const workspaceUri = DWJsonManager.getWorkspaceUri();
+    if (workspaceUri) {
+        const selections = Config.getWorkspaceProfileSelections();
+        const currentProfileName = selections[workspaceUri];
+        const profiles = Config.getProfiles();
+        const currentProfile = profiles.find(p => p.name === currentProfileName);
+        if (currentProfile) {
+            // Compare fields (excluding name)
+            const match = currentProfile.hostname === existingConfig.hostname &&
+                          currentProfile.username === existingConfig.username &&
+                          currentProfile.password === existingConfig.password &&
+                          currentProfile["code-version"] === existingConfig["code-version"];
+            if (match) return; // No change needed if it matches current selected profile
+        }
+    }
+
+    const result = await vscode.window.showInformationMessage(
+        'Manual change detected in dw.json. Would you like to update your DW Profiles?',
+        'Update Existing', 'Create New', 'Ignore'
+    );
+
+    if (result === 'Update Existing') {
+        await updateExistingProfileWithData(existingConfig);
+    } else if (result === 'Create New') {
+        await createNewProfileWithData(existingConfig);
+    }
+}
+
+async function updateExistingProfileWithData(data: Partial<any>) {
+    const profiles = Config.getProfiles();
+    if (profiles.length === 0) {
+        vscode.window.showInformationMessage('No DW Profiles found. Please create one first or choose "Create New Profile".');
+        return;
+    }
+
+    const items = profiles.map(p => ({ label: p.name, description: p.hostname || '' }));
+    const selected = await vscode.window.showQuickPick(items, { placeHolder: 'Select a DW Profile to update with current dw.json values' });
+
+    if (selected) {
+        const profileIndex = profiles.findIndex(p => p.name === selected.label);
+        if (profileIndex !== -1) {
+            profiles[profileIndex] = {
+                ...profiles[profileIndex],
+                ...data
+            };
+            await Config.saveProfiles(profiles);
+            vscode.window.showInformationMessage(`DW Profile '${selected.label}' updated successfully.`);
+            StatusBarManager.update();
+        }
+    }
+}
+
+async function createNewProfileWithData(data: Partial<any>) {
+    const name = await vscode.window.showInputBox({ 
+        prompt: 'Enter a name for this profile (e.g., Development)', 
+        value: 'New Profile' 
+    });
+
+    if (name) {
+        const profiles = Config.getProfiles();
+        if (profiles.find(p => p.name === name)) {
+            vscode.window.showErrorMessage(`Profile '${name}' already exists.`);
+            return;
+        }
+
+        profiles.push({
+            name,
+            ...data
+        });
+        await Config.saveProfiles(profiles);
+        vscode.window.showInformationMessage(`DW Profile '${name}' created successfully!`);
+        StatusBarManager.update();
     }
 }
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('DW Profiles extension activated');
+    Config.extensionUri = context.extensionUri;
 
     StatusBarManager.initialize(context);
     
     // Check for existing dw.json not tracked by profiles
     checkForExistingDWJson();
+
+    // Set up watcher for dw.json
+    const watcher = vscode.workspace.createFileSystemWatcher('**/dw.json');
+    watcher.onDidChange(() => handleDWJsonChange());
+    watcher.onDidCreate(() => handleDWJsonChange());
+    context.subscriptions.push(watcher);
 
     context.subscriptions.push(
         vscode.commands.registerCommand('dw-profiles.pickProfile', pickProfile)
@@ -86,6 +153,11 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(
         vscode.commands.registerCommand('dw-profiles.deleteProfileNode', deleteProfileNode)
+    );
+    context.subscriptions.push(
+        vscode.commands.registerCommand('dw-profiles.runInternalTests', () => {
+            import('./tests').then(m => m.runInternalTests());
+        })
     );
 
     vscode.workspace.onDidChangeConfiguration(e => {

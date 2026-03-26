@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { DWProfile, WorkspaceSelection } from './models';
 
 export class Config {
+    static extensionUri: vscode.Uri;
+
     static getProfiles(): DWProfile[] {
         const config = vscode.workspace.getConfiguration('dwProfiles');
         return config.get<DWProfile[]>('profiles') || [];

@@ -4,6 +4,8 @@ import * as path from 'path';
 import { DWProfile } from './models';
 
 export class DWJsonManager {
+    static isInternalWriting = false;
+
     static getWorkspaceUri(): string | undefined {
         if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length === 0) {
             return undefined;
@@ -47,11 +49,17 @@ export class DWJsonManager {
         
         const dwJsonContent = JSON.stringify(configData, null, 2);
         
+        this.isInternalWriting = true;
         try {
             fs.writeFileSync(dwJsonPath, dwJsonContent, 'utf8');
             vscode.window.showInformationMessage(`Applied profile '${profile.name}' to dw.json successfully.`);
         } catch (error: any) {
             vscode.window.showErrorMessage(`Failed to write dw.json: ${error.message}`);
+        } finally {
+            // Give a tiny bit of time before resetting to catch the watcher event if it's async
+            setTimeout(() => {
+                this.isInternalWriting = false;
+            }, 500);
         }
     }
 }

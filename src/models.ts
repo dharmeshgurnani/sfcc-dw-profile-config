@@ -4,6 +4,9 @@ export interface DWProfile {
     username?: string;
     password?: string;
     "code-version"?: string;
+    cartridge?: string[];
+    cartridgePath?: string;
+    [key: string]: any;
 }
 
 export interface WorkspaceSelection {

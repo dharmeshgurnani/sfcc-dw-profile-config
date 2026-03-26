@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { Config } from './config';
 import { DWJsonManager } from './dwJson';
 import { StatusBarManager } from './statusBar';
+import { DWProfile } from './models';
+import { EditWebviewProvider } from './editWebview';
 
 export async function pickProfile() {
     const profiles = Config.getProfiles();
@@ -37,9 +39,16 @@ export async function createProfile() {
     if (!name) return;
 
     const hostname = await vscode.window.showInputBox({ prompt: 'Enter Hostname (e.g., development-xxx.demandware.net)' });
+    if (hostname === undefined) return;
+
     const username = await vscode.window.showInputBox({ prompt: 'Enter Username' });
+    if (username === undefined) return;
+
     const password = await vscode.window.showInputBox({ prompt: 'Enter Password', password: true });
+    if (password === undefined) return;
+
     const codeVersion = await vscode.window.showInputBox({ prompt: 'Enter Code Version (default: version1)', value: 'version1' });
+    if (codeVersion === undefined) return;
 
     const profiles = Config.getProfiles();
     if (profiles.find(p => p.name === name)) {
@@ -59,6 +68,7 @@ export async function createProfile() {
     vscode.window.showInformationMessage(`DW Profile '${name}' created successfully.`);
 }
 
+
 export async function editProfile() {
     const profiles = Config.getProfiles();
     if (profiles.length === 0) {
@@ -75,21 +85,16 @@ export async function editProfile() {
 
         const p = profiles[profileIndex];
         
-        const hostname = await vscode.window.showInputBox({ prompt: 'Enter Hostname', value: p.hostname });
-        const username = await vscode.window.showInputBox({ prompt: 'Enter Username', value: p.username });
-        const password = await vscode.window.showInputBox({ prompt: 'Enter Password', password: true, value: p.password });
-        const codeVersion = await vscode.window.showInputBox({ prompt: 'Enter Code Version', value: p["code-version"] });
-
-        profiles[profileIndex] = {
-            name: p.name,
-            hostname: hostname || undefined,
-            username: username || undefined,
-            password: password || undefined,
-            "code-version": codeVersion || undefined
-        };
-
-        await Config.saveProfiles(profiles);
-        vscode.window.showInformationMessage(`DW Profile '${p.name}' updated successfully.`);
+        EditWebviewProvider.show(Config.extensionUri, p, async (updatedProfile) => {
+            const currentProfiles = Config.getProfiles();
+            // Re-find in case they changed while we were editing
+            const index = currentProfiles.findIndex(prof => prof.name === p.name);
+            if (index !== -1) {
+                currentProfiles[index] = { ...currentProfiles[index], ...updatedProfile };
+                await Config.saveProfiles(currentProfiles);
+                vscode.window.showInformationMessage(`DW Profile '${updatedProfile.name}' updated successfully.`);
+            }
+        });
     }
 }
 
@@ -139,21 +144,15 @@ export async function editProfileNode(node: any) {
 
         const p = profiles[profileIndex];
         
-        const hostname = await vscode.window.showInputBox({ prompt: 'Enter Hostname', value: p.hostname });
-        const username = await vscode.window.showInputBox({ prompt: 'Enter Username', value: p.username });
-        const password = await vscode.window.showInputBox({ prompt: 'Enter Password', password: true, value: p.password });
-        const codeVersion = await vscode.window.showInputBox({ prompt: 'Enter Code Version', value: p["code-version"] });
-
-        profiles[profileIndex] = {
-            name: p.name,
-            hostname: hostname || undefined,
-            username: username || undefined,
-            password: password || undefined,
-            "code-version": codeVersion || undefined
-        };
-
-        await Config.saveProfiles(profiles);
-        vscode.window.showInformationMessage(`DW Profile '${p.name}' updated successfully.`);
+        EditWebviewProvider.show(Config.extensionUri, p, async (updatedProfile) => {
+            const currentProfiles = Config.getProfiles();
+            const index = currentProfiles.findIndex(prof => prof.name === p.name);
+            if (index !== -1) {
+                currentProfiles[index] = { ...currentProfiles[index], ...updatedProfile };
+                await Config.saveProfiles(currentProfiles);
+                vscode.window.showInformationMessage(`DW Profile '${updatedProfile.name}' updated successfully.`);
+            }
+        });
     }
 }
 

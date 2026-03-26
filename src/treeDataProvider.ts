@@ -11,7 +11,18 @@ export class DWProfileTreeItem extends vscode.TreeItem {
         this.tooltip = `Hostname: ${profile.hostname || 'N/A'}\nUsername: ${profile.username || 'N/A'}`;
         this.description = profile.hostname || '';
         this.contextValue = 'dwProfile';
-        this.iconPath = new vscode.ThemeIcon('server');
+
+        const hn = profile.hostname?.toLowerCase() || '';
+        let iconName = 'cloud';
+        if (hn.includes('production')) {
+            iconName = 'shield';
+        } else if (hn.includes('development')) {
+            iconName = 'tools';
+        } else if (hn.includes('staging')) {
+            iconName = 'package';
+        }
+        
+        this.iconPath = new vscode.ThemeIcon(iconName);
     }
 }
 

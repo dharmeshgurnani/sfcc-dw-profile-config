@@ -9,7 +9,7 @@
     "url": "https://github.com/dharmeshgurnani/sfcc-dw-profile-config"
   },
   "description": "Define multiple dw.json profiles and switch them easily using the status bar",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "engines": {
     "vscode": "^1.83.0"
   },
@@ -24,7 +24,9 @@
     "vscode:prepublish": "npm run package-extension",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "package-extension": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --minify"
+    "package-extension": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --minify",
+    "pretest": "npm run compile",
+    "test": "node ./out/standaloneTest.js"
   },
   "contributes": {
     "commands": [
@@ -62,6 +64,10 @@
         "icon": "$(trash)"
       },
       {
+        "command": "dw-profiles.runInternalTests",
+        "title": "DW Profiles: Run Internal Tests"
+      },
+      {
         "command": "dw-profiles.refreshSidebar",
         "title": "Refresh",
         "icon": "$(refresh)"
@@ -80,7 +86,8 @@
       "dw-profiles-container": [
         {
           "id": "dw-profiles-view",
-          "name": "Profiles"
+          "name": "Profiles",
+          "icon": "resources/icon.svg"
         }
       ]
     },
@@ -166,27 +173,7 @@
           "markdownDescription": "Status bar display format:\n- **full**: `DW > profile` (default)\n- **compact**: `profile`"
         }
       }
-    },
-    "colors": [
-      {
-        "id": "dwProfiles.devBackground",
-        "description": "Background color for DW Profiles on Development environment",
-        "defaults": {
-          "dark": "#1b4d21",
-          "light": "#2ea043",
-          "highContrast": "#2ea043"
-        }
-      },
-      {
-        "id": "dwProfiles.stagingBackground",
-        "description": "Background color for DW Profiles on Staging environment",
-        "defaults": {
-          "dark": "#0e639c",
-          "light": "#007acc",
-          "highContrast": "#007acc"
-        }
-      }
-    ]
+    }
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

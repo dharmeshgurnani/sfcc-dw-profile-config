@@ -4,3 +4,4 @@ out/
 refrence/
 *.vsix
 .DS_Store
+dw.json

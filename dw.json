@@ -1,1 +1,7 @@
-{}
+{
+  "hostname": "sb002.dx.commercecloud.salesforce.com",
+  "username": "Sandbox_002",
+  "password": "Sandbox_002",
+  "code-version": "Sandbox_CV",
+  "custom": "ghedk"
+}
