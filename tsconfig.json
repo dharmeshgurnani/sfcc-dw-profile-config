@@ -3,6 +3,9 @@
     "module": "CommonJS",
     "target": "es2022",
     "outDir": "out",
+    "types": [
+      "node"
+    ],
     "lib": [
       "es2022"
     ],

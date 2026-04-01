@@ -2,20 +2,20 @@
 
 <table style="disply:flex">
 <tr>
-  <td><img src="./images/icon.png" />
+  <td><img src="https://res.cloudinary.com/dt6cmsuoe/image/upload/v1775039208/icon_vok2gc.png" />
 </td>
   <td><h1 style="flex:1">DW Profiles Extension for VS Code</h1>
 </td>
 </tr>
 <table>
 
-![DW Profiles Extension for VS Code Banner](./images/dw_profiles_banner.png)
+![DW Profiles Extension for VS Code Banner](https://res.cloudinary.com/dt6cmsuoe/image/upload/v1775038487/dw_profiles_banner_qgns3k.png)
 
-Ever wanted to manage multiple `dw.json` profiles for your Salesforce Commerce Cloud (SFCC) projects (e.g., Development, Staging, Production) and switch between them easily? This extension allows you to maintain different SFCC connection details in named profiles and seamlessly apply them to your workspace's `dw.json` file.
+Ever wanted to manage multiple `dw.json` profiles for your Salesforce Commerce Cloud (SFCC) projects (e.g., Development and Sandbox environments) and switch between them easily? This extension allows you to maintain different SFCC connection details in named profiles and seamlessly apply them to your workspace's `dw.json` file.
 
 - **Key Features**
 - **Unified Profile Editor** - Edit all profile fields at once in a modern, full-form Webview instead of sequential prompts.
-- **Environment-Specific Icons** - Instantly recognize your environment in the sidebar with dynamic icons: Shield (Production), Tools (Development), and Package (Staging).
+- **Environment-Specific Icons** - Instantly recognize your environment in the sidebar with dynamic icons for Development and Sandbox environments.
 - **Extended dw.json Support** - Full support for `hostname`, `username`, `password`, `code-version`, plus `cartridge` and `cartridgePath` (Prophet compatible). Unknown fields are preserved on save.
 - **Easy Profile Management** - Create, edit, apply, and delete multiple `dw.json` profiles via a dedicated Sidebar view or the Command Palette.
 - **Private Profile Selections** - Profile definitions and workspace selections are stored in your user settings, keeping your credentials off git.
@@ -27,7 +27,7 @@ Ever wanted to manage multiple `dw.json` profiles for your Salesforce Commerce C
 
 ### Managing Profiles
 
-![Manage Proflie](./images/dw_profiles_manage_profiles.png)
+![Manage Proflie](https://res.cloudinary.com/dt6cmsuoe/image/upload/v1775039208/dw_profiles_manage_profiles_gzuglu.png)
 
 Once you install the extension, you'll see a new "DW Profiles" icon in the Activity Bar. Click on it to open the Profiles view.
 
@@ -39,12 +39,12 @@ From here, you can:
 
 ### Applying Profiles (Status Bar)
 
-![Apply Profile](./images/dw_profiles_select_profile.png)
+![Apply Profile](https://res.cloudinary.com/dt6cmsuoe/image/upload/v1775039208/dw_profiles_select_profile_tb5zd7.png)
 The extension adds an item to your Status Bar indicating your currently applied DW Profile. 
 
 1. Click on the DW Profile indicator in the Status Bar.
 2. A quick pick dropdown will appear showing all your configured profiles.
-3. Select the desired profile (e.g., `Staging`).
+3. Select the desired profile (e.g., `Sandbox`).
 4. The extension will automatically overwrite your workspace's `dw.json` with the connection details of the selected profile.
 5. The Status Bar will update to show the newly selected profile.
 
@@ -53,9 +53,9 @@ When editing a profile, a modern Webview form opens, allowing you to update all 
 
 ### Environment-Specific Icons
 The sidebar dynamically updates icons based on the profile's hostname:
-- **Production**: Shield (`$(shield)`)
+- **Sandbox**: Shield (`$(shield)`)
 - **Development**: Tools (`$(tools)`)
-- **Staging**: Package (`$(package)`)
+- **Additional Sandbox**: Package (`$(package)`)
 - **Default**: Cloud (`$(cloud)`)
 
 ## Configuration
@@ -67,15 +67,15 @@ You can manually edit them in your `settings.json`:
 {
   "dwProfiles.profiles": [
     {
-      "name": "Development",
-      "hostname": "development-xxx.demandware.net",
+      "name": "Development Sandbox 1",
+      "hostname": "development-1-xxx.demandware.net",
       "username": "myuser",
       "password": "mypassword",
       "code-version": "version1"
     },
     {
-      "name": "Staging",
-      "hostname": "staging-xxx.demandware.net",
+      "name": "Development Sandbox 2",
+      "hostname": "development-2-xxx.demandware.net",
       "username": "myuser",
       "password": "mypassword",
       "code-version": "version2"
@@ -94,6 +94,3 @@ If you have any questions, need support, or want to discuss feature requests, fe
 - **Website**: [www.dharmeshgurnani.com](https://www.dharmeshgurnani.com/?utm_campaign=dw-profiles-extension&utm_source=vs-code-marketplace)
 
 ---
-
-## Issues and Feature Requests
-If you encounter any bugs or have feature requests, please report them on the [GitHub Issues](https://github.com/dharmeshgurnani/sfcc-dw-profile-config/issues) page!
