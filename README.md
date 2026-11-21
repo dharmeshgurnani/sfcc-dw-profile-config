@@ -94,3 +94,15 @@ If you have any questions, need support, or want to discuss feature requests, fe
 - **Website**: [www.dharmeshgurnani.com](https://www.dharmeshgurnani.com/?utm_campaign=dw-profiles-extension&utm_source=vs-code-marketplace)
 
 ---
+
+## Example `dw.json`
+
+See [`dw.json.example`](dw.json.example) for the fields the extension reads. Never commit your real `dw.json`: it holds sandbox credentials and is already in `.gitignore`.
+
+## Support
+
+This extension is free. If it saves you time, you can [sponsor its development on GitHub](https://github.com/sponsors/dharmeshgurnani). Issues and pull requests are welcome.
+
+## License
+
+[MIT](LICENSE) © Dharmesh Gurnani
