@@ -1,0 +1,6 @@
+{
+  "hostname": "your-sandbox.dx.commercecloud.salesforce.com",
+  "username": "your-username",
+  "password": "your-password-or-access-key",
+  "code-version": "version1"
+}
