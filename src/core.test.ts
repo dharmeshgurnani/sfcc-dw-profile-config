@@ -143,3 +143,20 @@ test('DWProfileTreeItem chooses icons from hostname keywords', () => {
         clearModuleCache(['../treeDataProvider']);
     }
 });
+
+test('escapeHtml escapes characters that could break out of HTML attributes', () => {
+    const state = createMockState();
+    const { restore } = installVscodeMock(state);
+    clearModuleCache(['../editWebview']);
+
+    try {
+        const { escapeHtml } = require('./editWebview') as typeof import('./editWebview');
+
+        assert.equal(escapeHtml(`"><script>alert('x')</script>&`), '&quot;&gt;&lt;script&gt;alert(&#39;x&#39;)&lt;/script&gt;&amp;');
+        assert.equal(escapeHtml(undefined), '');
+        assert.equal(escapeHtml(null), '');
+    } finally {
+        restore();
+        clearModuleCache(['../editWebview']);
+    }
+});

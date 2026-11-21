@@ -1,6 +1,20 @@
 import * as vscode from 'vscode';
+import * as crypto from 'crypto';
 import { DWProfile } from './models';
 import { Config } from './config';
+
+export function escapeHtml(value: unknown): string {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function getNonce(): string {
+    return crypto.randomBytes(16).toString('base64');
+}
 
 export class EditWebviewProvider {
     public static currentPanel: EditWebviewProvider | undefined;
@@ -78,11 +92,14 @@ export class EditWebviewProvider {
 
     private _getHtmlForWebview(profile: DWProfile) {
         const webview = this._panel.webview;
+        const nonce = getNonce();
+        const csp = `default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}';`;
 
         return `<!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
+                <meta http-equiv="Content-Security-Policy" content="${csp}">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Edit DW Profile</title>
                 <style>
@@ -164,31 +181,31 @@ export class EditWebviewProvider {
                     </p>
                     <div class="field">
                         <label>Profile Name <span style="color: var(--vscode-errorForeground)">*</span></label>
-                        <input type="text" id="name" value="${profile.name}" placeholder="e.g. Staging or Development">
+                        <input type="text" id="name" value="${escapeHtml(profile.name)}" placeholder="e.g. Staging or Development">
                     </div>
                     <div class="field">
                         <label>Hostname</label>
-                        <input type="text" id="hostname" value="${profile.hostname || ''}" placeholder="development-xxx.demandware.net">
+                        <input type="text" id="hostname" value="${escapeHtml(profile.hostname)}" placeholder="development-xxx.demandware.net">
                     </div>
                     <div class="field">
                         <label>Username</label>
-                        <input type="text" id="username" value="${profile.username || ''}" placeholder="e.g. amade">
+                        <input type="text" id="username" value="${escapeHtml(profile.username)}" placeholder="e.g. jdoe">
                     </div>
                     <div class="field">
                         <label>Password</label>
-                        <input type="password" id="password" value="${profile.password || ''}">
+                        <input type="password" id="password" value="${escapeHtml(profile.password)}">
                     </div>
                     <div class="field">
                         <label>Code Version</label>
-                        <input type="text" id="code-version" value="${profile['code-version'] || ''}" placeholder="version1">
+                        <input type="text" id="code-version" value="${escapeHtml(profile['code-version'])}" placeholder="version1">
                     </div>
                     <div class="field">
                         <label>Cartridges (comma separated list)</label>
-                        <input type="text" id="cartridge" value="${(profile.cartridge || []).join(', ')}" placeholder="cartridgeA, cartridgeB">
+                        <input type="text" id="cartridge" value="${escapeHtml((profile.cartridge || []).join(', '))}" placeholder="cartridgeA, cartridgeB">
                     </div>
                     <div class="field">
                         <label>Cartridge Path (colon separated)</label>
-                        <input type="text" id="cartridgePath" value="${profile.cartridgePath || ''}" placeholder="cartridgeA:cartridgeB">
+                        <input type="text" id="cartridgePath" value="${escapeHtml(profile.cartridgePath)}" placeholder="cartridgeA:cartridgeB">
                     </div>
                     <div class="actions">
                         <button id="save-btn">${profile.name ? 'Save Changes' : 'Create Profile'}</button>
@@ -199,7 +216,7 @@ export class EditWebviewProvider {
                     </div>
                 </div>
 
-                <script>
+                <script nonce="${nonce}">
                     const vscode = acquireVsCodeApi();
                     
                     document.getElementById('save-btn').addEventListener('click', () => {
