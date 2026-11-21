@@ -1,33 +1,46 @@
 
 
-<table style="disply:flex">
-<tr>
-  <td><img src="https://res.cloudinary.com/dt6cmsuoe/image/upload/v1775039208/icon_vok2gc.png" />
-</td>
-  <td><h1 style="flex:1">DW Profiles Extension for VS Code</h1>
-</td>
-</tr>
-<table>
+<p align="center">
+  <img src="https://res.cloudinary.com/dt6cmsuoe/image/upload/v1775039208/icon_vok2gc.png" alt="DW Profiles icon" width="96" />
+</p>
+
+<h1 align="center">DW Profiles Extension for VS Code</h1>
+
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=dharmeshgurnani.sfcc-dw-profile-config"><img src="https://img.shields.io/visual-studio-marketplace/v/dharmeshgurnani.sfcc-dw-profile-config" alt="Marketplace version" /></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=dharmeshgurnani.sfcc-dw-profile-config"><img src="https://img.shields.io/visual-studio-marketplace/i/dharmeshgurnani.sfcc-dw-profile-config" alt="Marketplace installs" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+</p>
 
 ![DW Profiles Extension for VS Code Banner](https://res.cloudinary.com/dt6cmsuoe/image/upload/v1775038487/dw_profiles_banner_qgns3k.png)
 
 Ever wanted to manage multiple `dw.json` profiles for your Salesforce Commerce Cloud (SFCC) projects (e.g., Development and Sandbox environments) and switch between them easily? This extension allows you to maintain different SFCC connection details in named profiles and seamlessly apply them to your workspace's `dw.json` file.
 
-- **Key Features**
+## Key Features
+
 - **Unified Profile Editor** - Edit all profile fields at once in a modern, full-form Webview instead of sequential prompts.
-- **Environment-Specific Icons** - Instantly recognize your environment in the sidebar with dynamic icons for Development and Sandbox environments.
+- **Environment-Specific Icons** - Instantly recognize your environment in the sidebar with icons based on the profile hostname (production, development, staging).
 - **Extended dw.json Support** - Full support for `hostname`, `username`, `password`, `code-version`, plus `cartridge` and `cartridgePath` (Prophet compatible). Unknown fields are preserved on save.
 - **Easy Profile Management** - Create, edit, apply, and delete multiple `dw.json` profiles via a dedicated Sidebar view or the Command Palette.
-- **Private Profile Selections** - Profile definitions and workspace selections are stored in your user settings, keeping your credentials off git.
+- **Profiles Live in User Settings** - Profile definitions (including passwords) and workspace selections are stored in your user `settings.json`, not in the repository. See [Where your credentials are stored](#where-your-credentials-are-stored).
 - **Sidebar Integration** - A custom DW Profiles section in the Activity Bar to manage all your profiles at a glance with environment-specific icons.
 - **Status Bar Integration** - Quick access to the active profile from the status bar for fast environment switching.
-- **Multi-Root Workspace Support** - Store different profile selections for each workspace folder.
+- **Per-Workspace Selection** - Each workspace remembers its own selected profile. In a multi-root workspace, `dw.json` is read from and written to the first workspace folder only.
+
+## Install
+
+- In VS Code, open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`), search for **SFCC DW Profile Config**, and click **Install**.
+- Or from a terminal:
+
+  ```sh
+  code --install-extension dharmeshgurnani.sfcc-dw-profile-config
+  ```
 
 ## Usage
 
 ### Managing Profiles
 
-![Manage Proflie](https://res.cloudinary.com/dt6cmsuoe/image/upload/v1775039208/dw_profiles_manage_profiles_gzuglu.png)
+![Manage Profile](https://res.cloudinary.com/dt6cmsuoe/image/upload/v1775039208/dw_profiles_manage_profiles_gzuglu.png)
 
 Once you install the extension, you'll see a new "DW Profiles" icon in the Activity Bar. Click on it to open the Profiles view.
 
@@ -52,16 +65,16 @@ The extension adds an item to your Status Bar indicating your currently applied 
 When editing a profile, a modern Webview form opens, allowing you to update all fields (including cartridges and custom data) in one place.
 
 ### Environment-Specific Icons
-The sidebar dynamically updates icons based on the profile's hostname:
-- **Sandbox**: Shield (`$(shield)`)
-- **Development**: Tools (`$(tools)`)
-- **Additional Sandbox**: Package (`$(package)`)
-- **Default**: Cloud (`$(cloud)`)
+The sidebar picks an icon from keywords in the profile's hostname (case-insensitive, checked in this order):
+- hostname contains `production`: Shield (`$(shield)`)
+- hostname contains `development`: Tools (`$(tools)`)
+- hostname contains `staging`: Package (`$(package)`)
+- anything else (including sandboxes): Cloud (`$(cloud)`)
 
 ## Configuration
 
-The extension stores your configured `.dw` profiles in your VS Code Global Settings.
-You can manually edit them in your `settings.json`:
+The extension stores your configured `dw.json` profiles in your VS Code user (global) settings.
+You can manually edit them in your user `settings.json`:
 
 ```json
 {
@@ -86,14 +99,13 @@ You can manually edit them in your `settings.json`:
 
 The selected profile for each workspace is stored independently to allow separate projects to use different profiles simultaneously.
 
-## Support and Contact
+The `dwProfiles.profiles` setting is application-scoped, so it can only be set in your user settings. A workspace's committed `.vscode/settings.json` cannot define or override profiles.
 
-If you have any questions, need support, or want to discuss feature requests, feel free to reach out:
+### Where your credentials are stored
 
-- **Email**: [hello@dharmeshgurnani.com](mailto:hello@dharmeshgurnani.com)
-- **Website**: [www.dharmeshgurnani.com](https://www.dharmeshgurnani.com/?utm_campaign=dw-profiles-extension&utm_source=vs-code-marketplace)
+Profiles, including passwords, are stored **in plain text** in your user VS Code `settings.json`. They are not written to your repository, except that applying a profile writes its values to the workspace's `dw.json`. Keep `dw.json` in your `.gitignore`.
 
----
+If you use VS Code Settings Sync, your profiles (and their passwords) may be synced to your other machines along with the rest of your settings. Exclude `dwProfiles.profiles` via `settingsSync.ignoredSettings` if you do not want that.
 
 ## Example `dw.json`
 
@@ -101,7 +113,12 @@ See [`dw.json.example`](dw.json.example) for the fields the extension reads. Nev
 
 ## Support
 
-This extension is free. If it saves you time, you can [sponsor its development on GitHub](https://github.com/sponsors/dharmeshgurnani). Issues and pull requests are welcome.
+This extension is free. If it saves you time, you can [sponsor its development on GitHub](https://github.com/sponsors/dharmeshgurnani).
+
+- **Bugs and feature requests**: [open an issue](https://github.com/dharmeshgurnani/sfcc-dw-profile-config/issues). Pull requests are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Security issues**: please report privately, see [SECURITY.md](SECURITY.md).
+- **Email**: [hello@dharmeshgurnani.com](mailto:hello@dharmeshgurnani.com)
+- **Website**: [www.dharmeshgurnani.com](https://www.dharmeshgurnani.com/?utm_campaign=dw-profiles-extension&utm_source=vs-code-marketplace)
 
 ## License
 

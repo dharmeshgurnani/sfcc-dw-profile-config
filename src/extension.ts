@@ -111,7 +111,6 @@ async function createNewProfileWithData(data: Partial<any>) {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('DW Profiles extension activated');
     Config.extensionUri = context.extensionUri;
 
     StatusBarManager.initialize(context);
@@ -153,11 +152,6 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(
         vscode.commands.registerCommand('dw-profiles.deleteProfileNode', deleteProfileNode)
-    );
-    context.subscriptions.push(
-        vscode.commands.registerCommand('dw-profiles.runInternalTests', () => {
-            import('./tests').then(m => m.runInternalTests());
-        })
     );
 
     vscode.workspace.onDidChangeConfiguration(e => {
